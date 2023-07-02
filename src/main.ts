@@ -5,7 +5,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Logger } from 'nestjs-pino';
-
+import * as process from 'process';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -40,4 +40,5 @@ async function bootstrap() {
 
   await app.listen(process.env.ENV === 'dev' ? 3002 : 3000, '0.0.0.0');
 }
+
 bootstrap();

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { LoggerModule } from 'nestjs-pino';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HealthModule } from './modules/health/health.module';
+import { VideoModule } from './modules/video/video.module';
+import { QueueModule } from './modules/common/providers/queue/queue.module';
 
 const config = () => ({
   env: process.env.NODE_ENV,
@@ -17,6 +18,16 @@ const config = () => ({
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+  },
+  memphis: {
+    host: process.env.MEMPHIS_HOST,
+    port: process.env.MEMPHIS_PORT,
+    username: process.env.MEMPHIS_USERNAME,
+    password: process.env.MEMPHIS_PASSWORD,
+  },
+  queue: {
+    videoProducerName: process.env.QUEUE_VIDEO_PRODUCER_NAME,
+    videoConsumerName: process.env.QUEUE_VIDEO_CONSUMER_NAME,
   },
 });
 
@@ -46,8 +57,10 @@ const config = () => ({
         exclude: configService.get('logger.log.requests') ? [] : ['/(.*)'],
       }),
     }),
+    HealthModule,
+    VideoModule,
+    QueueModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}
