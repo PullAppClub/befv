@@ -29,6 +29,12 @@ const config = () => ({
     videoProducerName: process.env.QUEUE_VIDEO_PRODUCER_NAME,
     videoConsumerName: process.env.QUEUE_VIDEO_CONSUMER_NAME,
   },
+  aws: {
+    bucket: process.env.AWS_BUCKET,
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    storageBaseUrl: process.env.STORAGE_BASE_URL,
+  },
 });
 
 @Module({

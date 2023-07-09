@@ -67,7 +67,7 @@ export class FileHelper {
               reject(err.message);
             }
 
-            this.logger.info(`File download success: ${JSON.stringify(data)}`);
+            this.logger.info(`File download success`);
             resolve(data.Body as Buffer);
           },
         );
