@@ -84,7 +84,7 @@ export class VideoService {
           resolve(outputPath);
         })
         .on('error', (err) => {
-          this.logger.error('Error during compression:', err.message);
+          this.logger.error(`Error during compression: ${err.message}`);
           reject(err.message);
         })
         .run();
