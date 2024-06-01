@@ -7,7 +7,7 @@ import { QueueModule } from './modules/common/providers/queue/queue.module';
 
 const config = () => ({
   env: process.env.NODE_ENV,
-  port: 3000,
+  port: 3002,
   logger: {
     level: process.env.LOGGER_LEVEL || 'info',
     log: {
