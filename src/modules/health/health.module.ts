@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './controllers/health.controller';
-import { VideoProducer } from '../video/queue/producers/video.producer';
+import { VideoQueue } from '../video/queue/video.queue';
 
 @Module({
   controllers: [HealthController],
-  providers: [VideoProducer],
+  providers: [VideoQueue],
 })
 export class HealthModule {}

@@ -5,14 +5,14 @@ import * as ffmpeg from 'fluent-ffmpeg';
 
 import { PinoLogger } from 'nestjs-pino';
 import * as fs from 'fs';
-import { VideoProducer } from '../queue/producers/video.producer';
+import { VideoQueue } from '../queue/video.queue';
 
 @Injectable()
 export class VideoService {
   constructor(
     private readonly fileHelper: FileHelper,
     private readonly logger: PinoLogger,
-    private readonly videoProducer: VideoProducer,
+    private readonly videoProducer: VideoQueue,
   ) {}
 
   public async handleVideoCompression(params: {
@@ -35,12 +35,10 @@ export class VideoService {
     ]);
 
     await this.videoProducer.videoCompressed({
-      message: {
-        bucket: params.bucket,
-        videoName: compressedVideoPath,
-        thumbnailName: thumbnailPath,
-        originalVideoName: params.inputPath,
-      },
+      bucket: params.bucket,
+      videoName: compressedVideoPath,
+      thumbnailName: thumbnailPath,
+      originalVideoName: params.inputPath,
     });
 
     await Promise.all([

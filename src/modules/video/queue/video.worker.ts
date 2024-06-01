@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { QueueProvider } from '../../../common/providers/queue/queue.provider';
-import { VideoService } from '../../services/video.service';
+import { QueueProvider } from '../../common/providers/queue/queue.provider';
+import { VideoService } from '../services/video.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class VideoWorker {
   private readonly videoWorker = this.queueProvider.createWorker({
-    name: 'Video',
+    name: 'VideoToCompress',
     processor: (job: Job) => this.videoHandler(job),
   });
 
@@ -17,7 +17,7 @@ export class VideoWorker {
     private readonly logger: PinoLogger,
   ) {
     this.videoWorker.on('completed', (job: Job) => {
-      logger.info(`Job completed with result ${job.returnvalue}`);
+      logger.info(`Job ${job.id} completed`);
     });
   }
 

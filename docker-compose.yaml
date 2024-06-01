@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    links:
-      - sql
     ports:
       - "3002:3002"
     env_file:
