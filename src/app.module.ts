@@ -34,6 +34,7 @@ const config = () => ({
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     storageBaseUrl: process.env.STORAGE_BASE_URL,
+    regionEndpoint: process.env.AWS_REGION_ENDPOINT,
   },
 });
 

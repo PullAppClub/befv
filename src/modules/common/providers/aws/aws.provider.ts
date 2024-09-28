@@ -8,7 +8,7 @@ export class AwsProvider {
 
   constructor(private readonly configService: ConfigService) {
     this.s3Client = new S3({
-      endpoint: new Endpoint('ams3.digitaloceanspaces.com'), // only for digital ocean spaces
+      endpoint: new Endpoint(configService.get('aws.regionEndpoint')), // only for digital ocean spaces
       accessKeyId: configService.get('aws.accessKeyId'),
       secretAccessKey: configService.get('aws.secretAccessKey'),
     });
