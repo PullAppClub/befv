@@ -23,11 +23,16 @@ export class VideoWorker {
 
   public async videoHandler({
     data,
-  }: Job<{ bucket: string; videoName: string }>): Promise<void> {
+  }: Job<{
+    bucket: string;
+    videoName: string;
+    videoType: string;
+  }>): Promise<void> {
     try {
       await this.videoService.handleVideoCompression({
         bucket: data.bucket,
         inputPath: data.videoName,
+        videoType: data.videoType,
       });
     } catch (e) {
       this.logger.error(e.message);

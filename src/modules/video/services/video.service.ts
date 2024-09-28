@@ -18,6 +18,7 @@ export class VideoService {
   public async handleVideoCompression(params: {
     inputPath: string;
     bucket: string;
+    videoType: string;
   }): Promise<void> {
     const content = await this.fileHelper.download(
       params.inputPath,
@@ -39,6 +40,7 @@ export class VideoService {
       videoName: compressedVideoPath,
       thumbnailName: thumbnailPath,
       originalVideoName: params.inputPath,
+      videoType: params.videoType,
     });
 
     await Promise.all([
