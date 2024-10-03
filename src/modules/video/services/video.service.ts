@@ -7,6 +7,10 @@ import { VideoQueue } from '../queue/video.queue';
 import * as path from 'path';
 import { uuidv7 as uuid } from 'uuidv7';
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 @Injectable()
 export class VideoService {
   constructor(
@@ -27,8 +31,10 @@ export class VideoService {
 
     fs.writeFileSync(params.inputPath, content);
 
-    const compressedVideoPath = await this.compressVideo(params.inputPath);
-    const thumbnailPath = await this.createThumbnail(params.inputPath);
+    const [compressedVideoPath, thumbnailPath] = await Promise.all([
+      await this.compressVideo(params.inputPath),
+      this.createThumbnail(params.inputPath),
+    ]);
 
     await Promise.all([
       this.uploadFileToStorage(compressedVideoPath, params.bucket),
@@ -37,9 +43,9 @@ export class VideoService {
 
     await this.videoProducer.videoCompressed({
       bucket: params.bucket,
-      videoName: path.basename(compressedVideoPath),
-      thumbnailName: path.basename(thumbnailPath),
-      originalVideoName: path.basename(params.inputPath),
+      videoName: compressedVideoPath,
+      thumbnailName: thumbnailPath,
+      originalVideoName: params.inputPath,
       videoType: params.videoType,
     });
 
@@ -47,9 +53,8 @@ export class VideoService {
       this.removeFile(compressedVideoPath),
       this.removeFile(thumbnailPath),
       this.removeFile(params.inputPath),
+      this.fileHelper.delete(params.inputPath, params.bucket),
     ]);
-
-    await this.fileHelper.download(params.inputPath, params.bucket);
   }
 
   private async uploadFileToStorage(
@@ -87,14 +92,14 @@ export class VideoService {
 
   private async compressVideo(inputPath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const outputPath = `${uuid()}.mp4`;
+      const outputPath = `${uuid()}_compressed.mp4`;
 
       ffmpeg(inputPath)
         .videoCodec('libx264')
         .outputOptions([
           '-c:v libx264',
-          '-crf 28', // Target video quality (adjust as needed)
-          '-preset ultrafast',
+          '-crf 30', // Target video quality (adjust as needed)
+          '-preset slow',
         ])
         .output(outputPath)
         .on('end', () => {
