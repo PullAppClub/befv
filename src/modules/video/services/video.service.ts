@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { FileHelper } from '../../common/helpers/file/file.helper';
 import * as ffmpeg from 'fluent-ffmpeg';
-// import * as ffmpeg from 'ffmpeg';
-
 import { PinoLogger } from 'nestjs-pino';
 import * as fs from 'fs';
 import { VideoQueue } from '../queue/video.queue';
+import * as path from 'path';
+import { uuidv7 as uuid } from 'uuidv7';
 
 @Injectable()
 export class VideoService {
@@ -37,9 +37,9 @@ export class VideoService {
 
     await this.videoProducer.videoCompressed({
       bucket: params.bucket,
-      videoName: compressedVideoPath,
-      thumbnailName: thumbnailPath,
-      originalVideoName: params.inputPath,
+      videoName: path.basename(compressedVideoPath),
+      thumbnailName: path.basename(thumbnailPath),
+      originalVideoName: path.basename(params.inputPath),
       videoType: params.videoType,
     });
 
@@ -48,16 +48,34 @@ export class VideoService {
       this.removeFile(thumbnailPath),
       this.removeFile(params.inputPath),
     ]);
+
+    await this.fileHelper.download(params.inputPath, params.bucket);
   }
 
   private async uploadFileToStorage(
-    filePath: any,
+    filePath: string,
     bucket: string,
   ): Promise<void> {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`File does not exist: ${filePath}`);
+    }
+
+    const fileBuffer = fs.readFileSync(filePath);
+    if (fileBuffer.length === 0) {
+      throw new Error(`File buffer is empty: ${filePath}`);
+    }
+
+    this.logger.info(
+      `Uploading file: ${filePath}, size: ${(
+        fileBuffer.length /
+        (1024 * 1024)
+      ).toFixed(2)} mb`,
+    );
+
     await this.fileHelper.upload({
-      fileBuffer: fs.readFileSync(filePath),
+      fileBuffer,
       bucket: bucket,
-      filename: filePath,
+      filename: path.basename(filePath),
     });
   }
 
@@ -68,8 +86,8 @@ export class VideoService {
   }
 
   private async compressVideo(inputPath: string): Promise<string> {
-    return new Promise(async (resolve, reject) => {
-      const outputPath = inputPath.replace('.mp4', '-compressed.mp4');
+    return new Promise((resolve, reject) => {
+      const outputPath = `${uuid()}.mp4`;
 
       ffmpeg(inputPath)
         .videoCodec('libx264')
@@ -92,8 +110,7 @@ export class VideoService {
   }
 
   private async createThumbnail(videoPath: string): Promise<string> {
-    const outputPath = videoPath.replace('.mp4', '-thumbnail.jpg');
-
+    const outputPath = `${uuid()}.jpg`;
     return new Promise((resolve, reject) => {
       ffmpeg(videoPath)
         .screenshots({

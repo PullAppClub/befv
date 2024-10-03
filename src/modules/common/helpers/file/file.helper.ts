@@ -74,19 +74,22 @@ export class FileHelper {
     });
   }
 
-  /**
-   * Checks mimetype and returns the file extension.
-   */
-  private getFileExtension(file: UploadedFile): string {
-    switch (file.mimetype) {
-      case FileType.PNG:
-        return '.png';
-      case FileType.JPEG:
-        return '.jpeg';
-      case FileType.MP4:
-        return '.mp4';
-      default:
-        throw new UnsupportedMediaTypeException('ERROR.FILE_NOT_ACCEPTABLE');
-    }
+  public async delete(key: string, bucket: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.awsProvider
+        .getS3()
+        .deleteObject(
+          this.awsProvider.createDeleteFileParams(key, bucket),
+          (err: AWSError) => {
+            if (err) {
+              this.logger.info(`File delete error: ${err}`);
+              reject(err.message);
+            }
+
+            this.logger.info(`File delete success`);
+            resolve();
+          },
+        );
+    });
   }
 }
