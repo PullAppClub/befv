@@ -14,7 +14,7 @@ export class QueueProvider {
   constructor(configService: ConfigService) {
     this.redisConnection = {
       host: configService.get('redis.host'),
-      port: configService.get('redis.port'),
+      port: Number(configService.get('redis.port')),
       password: configService.get('redis.password'),
       username: configService.get('redis.username'),
     };
