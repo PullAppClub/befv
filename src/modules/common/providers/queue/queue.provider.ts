@@ -8,6 +8,7 @@ export class QueueProvider {
     host: string;
     port: number;
     password: string;
+    username: string;
   };
 
   constructor(configService: ConfigService) {
@@ -15,6 +16,7 @@ export class QueueProvider {
       host: configService.get('redis.host'),
       port: configService.get('redis.port'),
       password: configService.get('redis.password'),
+      username: configService.get('redis.username'),
     };
   }
 
