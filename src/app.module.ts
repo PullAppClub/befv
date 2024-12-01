@@ -18,12 +18,7 @@ const config = () => ({
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-  },
-  memphis: {
-    host: process.env.MEMPHIS_HOST,
-    port: process.env.MEMPHIS_PORT,
-    username: process.env.MEMPHIS_USERNAME,
-    password: process.env.MEMPHIS_PASSWORD,
+    password: process.env.REDIS_PASSWORD,
   },
   queue: {
     videoProducerName: process.env.QUEUE_VIDEO_PRODUCER_NAME,

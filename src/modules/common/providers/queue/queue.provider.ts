@@ -4,12 +4,17 @@ import { Job, Queue, Worker } from 'bullmq';
 
 @Injectable()
 export class QueueProvider {
-  private readonly redisConnection: { host: string; port: number };
+  private readonly redisConnection: {
+    host: string;
+    port: number;
+    password: string;
+  };
 
   constructor(configService: ConfigService) {
     this.redisConnection = {
       host: configService.get('redis.host'),
       port: configService.get('redis.port'),
+      password: configService.get('redis.password'),
     };
   }
 
