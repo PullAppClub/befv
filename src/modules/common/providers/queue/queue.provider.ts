@@ -8,12 +8,9 @@ export class QueueProvider {
     host: string;
     port: number;
     password: string;
-    username: string;
-    enableTLSForSentinelMode: boolean;
-    tls: {
-      host: string;
-      port: number;
-    };
+    username?: string;
+    enableTLSForSentinelMode?: boolean;
+    tls?: Record<string, any>;
   };
 
   constructor(configService: ConfigService) {
@@ -21,13 +18,16 @@ export class QueueProvider {
       host: configService.get('redis.host'),
       port: Number(configService.get('redis.port')),
       password: configService.get('redis.password'),
-      username: configService.get('redis.username'),
-      enableTLSForSentinelMode: false,
-      tls: {
-        host: configService.get('redis.host'),
-        port: Number(configService.get('redis.port')),
-      },
     };
+
+    if (configService.get('redis.username')) {
+      this.redisConnection['username'] = configService.get('redis.username');
+    }
+
+    if (configService.get('redis.tlsEnabled')) {
+      this.redisConnection['tls'] = {};
+      this.redisConnection['enableTLSForSentinelMode'] = false;
+    }
   }
 
   public createQueue(name: string): Queue {

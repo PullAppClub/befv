@@ -20,6 +20,7 @@ const config = () => ({
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD,
     username: process.env.REDIS_USERNAME,
+    tlsEnabled: Boolean(process.env.REDIS_TLS_ENABLED),
   },
   queue: {
     videoProducerName: process.env.QUEUE_VIDEO_PRODUCER_NAME,
