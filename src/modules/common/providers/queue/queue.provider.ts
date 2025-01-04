@@ -9,6 +9,11 @@ export class QueueProvider {
     port: number;
     password: string;
     username: string;
+    enableTLSForSentinelMode: boolean;
+    tls: {
+      host: string;
+      port: number;
+    };
   };
 
   constructor(configService: ConfigService) {
@@ -17,6 +22,11 @@ export class QueueProvider {
       port: Number(configService.get('redis.port')),
       password: configService.get('redis.password'),
       username: configService.get('redis.username'),
+      enableTLSForSentinelMode: false,
+      tls: {
+        host: configService.get('redis.host'),
+        port: Number(configService.get('redis.port')),
+      },
     };
   }
 
